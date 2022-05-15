@@ -11,7 +11,7 @@ export default function Login() {
    * Perform login action via Magic's passwordless flow. Upon successuful
    * completion of the login flow, a user is redirected to the homepage.
    */
-  const login = useCallback(async () => {    
+  const login = useCallback(async () => {
     setIsLoggingIn(true);
 
     try {
@@ -28,7 +28,7 @@ export default function Login() {
   /**
    * Saves the value of our email input into component state.
    */
-  const handleInputOnChange = useCallback(event => {
+  const handleInputOnChange = useCallback((event) => {
     setEmail(event.target.value);
   }, []);
 
@@ -43,8 +43,9 @@ export default function Login() {
         onChange={handleInputOnChange}
         disabled={isLoggingIn}
       />
-      <button onClick={login} disabled={isLoggingIn}>Send</button>
+      <button onClick={login} disabled={isLoggingIn}>
+        Send
+      </button>
     </div>
   );
 }
-

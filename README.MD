@@ -1,12 +1,12 @@
 # Resources
-- [GitHub Repo](https://github.com/magiclabs/magic-polygon)
-- [Demo](https://magic-polygon.vercel.app/login)
+
+- [GitHub Repo](https://github.com/NicholasDevStore/simpleweb3)
 
 # Quick Start
 
 ```
-$ git clone https://github.com/magiclabs/magic-polygon.git
-$ cd magic-polygon
+$ git clone https://github.com/NicholasDevStore/simpleweb3
+$ cd simpleweb3
 $ mv .env.local .env // enter your Magic Publishable Key (from https://dashboard.magic.link)
 $ yarn install
 $ yarn start
@@ -14,11 +14,11 @@ $ yarn start
 
 # Introduction
 
-With the rising gas costs on Ethereum, many developers are looking towards scaling solutions to help with both improved transaction speed, as well as cheaper gas costs for users. Polygon (formerly Matic) is one such solution. 
+With the rising gas costs on Ethereum, many developers are looking towards scaling solutions to help with both improved transaction speed, as well as cheaper gas costs for users. Polygon (formerly Matic) is one such solution.
 
 Polygon is a protocol which enables connecting Ethereum-compatible blockchains, and is also a Proof of Stake side-chain scaling solution for Ethereum. The side-chain runs alongside Ethereum's blockchain, and processes transactions before finalizing them on Ethereum.
 
-With Magic, developers can connect to Polygon by simply specifying the network URL when initiating a Magic instance. This guide will show how you can create a web3-enabled app, allow users to switch between Ethereum and Polygon networks, call smart contracts, and send transactions. 
+With Magic, developers can connect to Polygon by simply specifying the network URL when initiating a Magic instance. This guide will show how you can create a web3-enabled app, allow users to switch between Ethereum and Polygon networks, call smart contracts, and send transactions.
 
 _Note: `ETH` is the native token to Ethereum, `MATIC` is the native token to Polygon._
 
@@ -30,30 +30,36 @@ _Note: this app was bootstrapped with the `npx make-magic` React template._
 
 In `magic.js`, we will need two `Magic` and two `Web3` instances, one for each network, since we're allowing users to switch between the two. If you're only interested in connecting to Polygon, then only one instance of `Magic` and `Web3` should be created. We also are adding `magicEthereum.network = "ethereum"` to be able to identify the Magic network we're creating.
 
-You’ll use the same API key for both `Magic` instances so that the user’s public address does not change. 
+You’ll use the same API key for both `Magic` instances so that the user’s public address does not change.
 
 ```js
-import { Magic } from 'magic-sdk';
-import Web3 from 'web3';
+import { Magic } from "magic-sdk";
+import Web3 from "web3";
 
-/** 
+/**
  * NOTE: when connecting to a testnet, TEST API keys must be used from the Magic dashboard (live API keys for eth mainnet)
  */
 
 const customNodeOptions = {
-  rpcUrl: 'https://rpc-mumbai.matic.today',
-  chainId: 80001
-}
+  rpcUrl: "https://rpc-mumbai.matic.today",
+  chainId: 80001,
+};
 
 // Setting network to Matic
-export const magicMatic = new Magic(process.env.REACT_APP_MAGIC_PUBLISHABLE_KEY, { network: customNodeOptions });
-magicMatic.network = "matic"
+export const magicMatic = new Magic(
+  process.env.REACT_APP_MAGIC_PUBLISHABLE_KEY,
+  { network: customNodeOptions }
+);
+magicMatic.network = "matic";
 
 export const maticWeb3 = new Web3(magicMatic.rpcProvider);
 
 // Setting network to Ethereum (Ropsten Testnet)
-export const magicEthereum = new Magic(process.env.REACT_APP_MAGIC_PUBLISHABLE_KEY, { network: 'ropsten' });
-magicEthereum.network = "ethereum"
+export const magicEthereum = new Magic(
+  process.env.REACT_APP_MAGIC_PUBLISHABLE_KEY,
+  { network: "ropsten" }
+);
+magicEthereum.network = "ethereum";
 
 export const ethWeb3 = new Web3(magicEthereum.rpcProvider);
 ```
@@ -65,20 +71,22 @@ Users are able to switch between the Ethereum and Polygon networks with the `sel
 ```js
 import { magicEthereum, magicMatic, ethWeb3, maticWeb3 } from "../magic";
 
-  const handleChangeNetwork = (e) => {
-    e.target.value === 'ethereum' ? setMagic(magicEthereum) : setMagic(magicMatic);
-    fetchBalance(userMetadata.publicAddress);
-    fetchContractMessage();
-  }
+const handleChangeNetwork = (e) => {
+  e.target.value === "ethereum"
+    ? setMagic(magicEthereum)
+    : setMagic(magicMatic);
+  fetchBalance(userMetadata.publicAddress);
+  fetchContractMessage();
+};
 
-  return (
-    <div className="info">
-      <select name="network" onChange={(e) => handleChangeNetwork(e)}>
-        <option value="ethereum">Ethereum (Ropsten Testnet)</option>
-        <option value="matic">Matic (Mumbai Testnet)</option>
-      </select>
-    </div>
-  )
+return (
+  <div className="info">
+    <select name="network" onChange={(e) => handleChangeNetwork(e)}>
+      <option value="ethereum">Ethereum (Ropsten Testnet)</option>
+      <option value="matic">Matic (Mumbai Testnet)</option>
+    </select>
+  </div>
+);
 ```
 
 ## Viewing User Balance
@@ -100,7 +108,7 @@ return (
 
 ## Send Transaction
 
-Sending a transaction is also very simple and the same for either network you're connected to. All that's needed is to provide an amount to send, and  `from` and `to` addresses. If no `gas` or `gasPrice` are explicitly passed in, the gas limit and price will be calculated automatically. Otherwise, the values passed in will be used.
+Sending a transaction is also very simple and the same for either network you're connected to. All that's needed is to provide an amount to send, and `from` and `to` addresses. If no `gas` or `gasPrice` are explicitly passed in, the gas limit and price will be calculated automatically. Otherwise, the values passed in will be used.
 
 ```js
 const web3 = magic.network === "ethereum" ? ethWeb3 : maticWeb3;
@@ -110,33 +118,33 @@ const sendTransaction = async () => {
   const receipt = await web3.eth.sendTransaction({
     from: publicAddress,
     to: toAddress,
-    value: web3.utils.toWei(amount)
+    value: web3.utils.toWei(amount),
   });
-}
+};
 
 return (
- <div className="container">
-  <h1>Send Transaction</h1>
-  <input 
-    type="text" 
-    value={toAddress} 
-    onChange={(e) => setToAddress(e.target.value)} 
-    placeholder="To Address" 
-  />
-  <input 
-    type="text" 
-    value={amount} 
-    onChange={(e) => setAmount(e.target.value)} 
-    placeholder="Amount" 
-  />
-  <button onClick={sendTransaction}>Send Transaction</button>
-</div>
-)
+  <div className="container">
+    <h1>Send Transaction</h1>
+    <input
+      type="text"
+      value={toAddress}
+      onChange={(e) => setToAddress(e.target.value)}
+      placeholder="To Address"
+    />
+    <input
+      type="text"
+      value={amount}
+      onChange={(e) => setAmount(e.target.value)}
+      placeholder="Amount"
+    />
+    <button onClick={sendTransaction}>Send Transaction</button>
+  </div>
+);
 ```
 
 ## Calling Smart Contracts
 
-Separate smart contracts will need to be deployed on each Ethereum and Polygon for your users to interact with them. So you'll also need to dynamically know the correct address that the contract is deployed to in order to call it. 
+Separate smart contracts will need to be deployed on each Ethereum and Polygon for your users to interact with them. So you'll also need to dynamically know the correct address that the contract is deployed to in order to call it.
 
 ```js
 const network = magic.network === "ethereum" ? 'ethereum' : 'matic';
@@ -158,10 +166,10 @@ return (
   <div className="info">{message}</div>
 
   <h1>Update Message</h1>
-  <input 
-    type="text" 
-    value={newMessage} 
-    onChange={(e) => setNewMessage(e.target.value)} 
+  <input
+    type="text"
+    value={newMessage}
+    onChange={(e) => setNewMessage(e.target.value)}
     placeholder="New Message" />
 
   <button onClick={updateContractMessage}>Update</button>

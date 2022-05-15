@@ -11,7 +11,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="App">
-      <Switch>
+        <Switch>
           <Route path="/login" exact component={Login} />
           <Route path="/callback" exact component={Callback} />
           <Route path="*" exact component={Home} />
@@ -20,4 +20,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-
